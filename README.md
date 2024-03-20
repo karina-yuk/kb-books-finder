@@ -4,7 +4,8 @@
 
 ## Description
 
-This application is a books search engine that allows users to search for books and save them to a database. The application uses React, Node.js, Express and MongoDB.
+
+"This application is a book search engine crafted using the MERN stack (MongoDB, Express.js, React, Node.js), it allow users to explore books from the Google Books API. This project was initially structured with a RESTful API design, the project underwent a refactor to adopt GraphQL alongside Apollo Server, enhancing both performance and adaptability. With GraphQL, users can seamlessly retrieve and manipulate data through queries and mutations, resulting in a more efficient user experience."
 
 ## Table of Contents
 
@@ -16,8 +17,7 @@ This application is a books search engine that allows users to search for books 
 
 ## Installation
 
-No installation needed. To access the application, please visit: https://kb-books-finder-92d8aba81db6.herokuapp.com
-
+No installation needed. To access the application, please visit: 
 
 ## Application Sample
 
@@ -51,8 +51,6 @@ Sample image of the application shown :
 - [Node.js](https://nodejs.org/en/) 
 - [Express](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/)
-- [Mongoose](https://mongoosejs.com/)
-- [Heroku](https://www.heroku.com/)
 
 ## License
 
