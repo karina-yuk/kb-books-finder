@@ -1,105 +1,131 @@
-import { useState } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { useState } from "react"; // import the useState hook from React
+import { Form, Button, Alert } from "react-bootstrap"; // import the Form, Button, and Alert components from React Bootstrap
 
-import { createUser } from '../utils/API';
-import Auth from '../utils/auth';
+import { useMutation } from "@apollo/client"; // import the useMutation hook from the Apollo Client
+import { ADD_USER } from "../utils/mutations"; // import the ADD_USER mutation from the mutations file in the utils folder
 
+import Auth from "../utils/auth"; // import the Auth module from the utils folder
+
+// create the SignupForm component to handle user signups
 const SignupForm = () => {
-  // set initial form state
-  const [userFormData, setUserFormData] = useState({ username: '', email: '', password: '' });
-  // set state for form validation
-  const [validated] = useState(false);
-  // set state for alert
-  const [showAlert, setShowAlert] = useState(false);
+  const [userFormData, setUserFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  }); // set initial form state
+  const [validated] = useState(false); // set state for form validation
+  const [showAlert, setShowAlert] = useState(false); // set state for alert
+  const [addUser, { error }] = useMutation(ADD_USER); // use mutation for adding a user
 
+  // create method to handle form input changes and update the component state
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUserFormData({ ...userFormData, [name]: value });
+    const { name, value } = event.target; // destructure the name and value properties from the event.target
+    setUserFormData({ ...userFormData, [name]: value }); // set the form state for the appropriate input field
   };
 
+  // create method to handle form submission and log the user in
   const handleFormSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // prevent the default form action
+    const form = event.currentTarget; // check if form has everything (as per react-bootstrap docs)
 
-    // check if form has everything (as per react-bootstrap docs)
-    const form = event.currentTarget;
     if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
+      // check if the form is valid
+      event.preventDefault(); // prevent the default form action
+      event.stopPropagation(); // stop the form propagation
     }
 
     try {
-      const response = await createUser(userFormData);
+      // try to execute the addUser mutation
+      const { data } = await addUser({
+        // destructure the data object from the addUser mutation
+        variables: { ...userFormData }, // pass the userFormData object to the mutation as variables
+      });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
+      Auth.login(data.addUser.token); // log the user in by passing the token from the mutation to the Auth.login method
     } catch (err) {
-      console.error(err);
-      setShowAlert(true);
+      // catch any errors and log them to the console
+      console.error(err); // log the error to the console
+      setShowAlert(true); // set the showAlert state to true
     }
 
     setUserFormData({
-      username: '',
-      email: '',
-      password: '',
+      // reset the form state
+      username: "", // reset the username to an empty string
+      email: "", // reset the email to an empty string
+      password: "", // reset the password to an empty string
     });
   };
 
+  // return the JSX for the SignupForm component with a Form, Alert, Form.Group, Form.Label, Form.Control, and Button
   return (
     <>
       {/* This is needed for the validation functionality above */}
       <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
         {/* show alert if server response is bad */}
-        <Alert dismissible onClose={() => setShowAlert(false)} show={showAlert} variant='danger'>
+        <Alert
+          dismissible
+          onClose={() => setShowAlert(false)}
+          show={showAlert}
+          variant="danger"
+        >
           Something went wrong with your signup!
         </Alert>
 
-        <Form.Group className='mb-3'>
-          <Form.Label htmlFor='username'>Username</Form.Label>
+        <Form.Group className="mb-3">
+          <Form.Label htmlFor="username">Username</Form.Label>
           <Form.Control
-            type='text'
-            placeholder='Your username'
-            name='username'
+            type="text"
+            placeholder="Your username"
+            name="username"
             onChange={handleInputChange}
             value={userFormData.username}
             required
           />
-          <Form.Control.Feedback type='invalid'>Username is required!</Form.Control.Feedback>
+          <Form.Control.Feedback type="invalid">
+            Username is required!
+          </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className='mb-3'>
-          <Form.Label htmlFor='email'>Email</Form.Label>
+        <Form.Group className="mb-3">
+          <Form.Label htmlFor="email">Email</Form.Label>
           <Form.Control
-            type='email'
-            placeholder='Your email address'
-            name='email'
+            type="email"
+            placeholder="Your email address"
+            name="email"
             onChange={handleInputChange}
             value={userFormData.email}
             required
           />
-          <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
+          <Form.Control.Feedback type="invalid">
+            Email is required!
+          </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className='mb-3'>
-          <Form.Label htmlFor='password'>Password</Form.Label>
+        <Form.Group className="mb-3">
+          <Form.Label htmlFor="password">Password</Form.Label>
           <Form.Control
-            type='password'
-            placeholder='Your password'
-            name='password'
+            type="password"
+            placeholder="Your password"
+            name="password"
             onChange={handleInputChange}
             value={userFormData.password}
             required
           />
-          <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
+          <Form.Control.Feedback type="invalid">
+            Password is required!
+          </Form.Control.Feedback>
         </Form.Group>
         <Button
-          disabled={!(userFormData.username && userFormData.email && userFormData.password)}
-          type='submit'
-          variant='success'>
+          disabled={
+            !(
+              userFormData.username &&
+              userFormData.email &&
+              userFormData.password
+            )
+          }
+          type="submit"
+          variant="success"
+        >
           Submit
         </Button>
       </Form>
